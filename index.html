@@ -145,6 +145,39 @@ WebAssembly is widely supported by browsers.
   - Profit
 
 ---
+# Rust and WebAssembly
+
+## Why Rust?
+
+- Excellent support for WebAssembly:
+  - `rustup target add wasm32-unknown-unknown`
+  - `cargo build --target=wasm32-unknown-unknown`
+  - ...
+  - Profit
+
+- Language focused on performances.
+  - Missing from the JavaScript world.
+
+---
+# Rust and WebAssembly
+
+## Why Rust?
+
+- Excellent support for WebAssembly:
+  - `rustup target add wasm32-unknown-unknown`
+  - `cargo build --target=wasm32-unknown-unknown`
+  - ...
+  - Profit
+
+- Language focused on performances.
+  - Missing from the JavaScript world.
+
+- Ecosystem already there!
+  - `wasm-bindgen` crate.
+  - `js-sys` and `web-sys` crates.
+  - Many ecosystem crates compatible.
+
+---
 # A success story
 
 
@@ -386,6 +419,7 @@ Solution:
 - Use crates such as `wasm_timer`.
   - Provides `Instant` and `Delay`.
   - Abstracts over desktop and browsers.
+    - Uses `web-sys`.
 
 ---
 # Caveats
