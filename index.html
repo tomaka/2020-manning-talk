@@ -46,11 +46,7 @@ a, a:hover, a:visited, a:active {
      <textarea id="source">
 class: center, middle
 
-# How we compiled libp2p into WASM and made it run in the browser
-
-## Rust meetup - Montevideo, March 2019
-
-https://github.com/libp2p/rust-libp2p
+# Running Rust inside of a browser
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
 .right[
@@ -60,525 +56,336 @@ https://github.com/libp2p/rust-libp2p
 </div>
 ---
 
-# Introduction: what is libp2p?
+# Introduction: what is WebAssembly?
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
 .right[
-    <img src="parity-logo.png" alt="ParityTech" height="100" />
+    <img src="web-assembly.png" alt="WebAssembly" height="100" />
 ]
 </div>
 ---
 
-# Introduction: what is libp2p?
+# Introduction: what is WebAssembly?
 
-Libp2p is a protocol and library for creating decentralized peer-to-peer networks.
-
-https://libp2p.io/
-
-- Used by IPFS, Filecoin, Polkadot, Ethereum 2.0, and others.
-- Designed and managed by Protocol Labs (https://protocol.ai/).
+WebAssembly is a compilation target.
+- Step 1: compile your program to WebAssembly
+- Step 2: deploy your .wasm file as if it was JavaScript
+- Step 3: users' browsers run that WebAssembly, and thus your program
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
 .right[
-    <img src="parity-logo.png" alt="ParityTech" height="100" />
+    <img src="web-assembly.png" alt="WebAssembly" height="100" />
 ]
 </div>
-
 ---
 
-# Introduction: what is libp2p?
+# Introduction: what is WebAssembly?
 
-Libp2p is a protocol and library for creating decentralized peer-to-peer networks.
+WebAssembly is a compilation target.
+- Step 1: compile your program to WebAssembly
+- Step 2: deploy your .wasm file as if it was JavaScript
+- Step 3: users' browsers run that WebAssembly, and thus your program
 
-https://libp2p.io/
+Revisits the dream of "compile once, run everywhere".
 
-- Used by IPFS, Filecoin, Polkadot, Ethereum 2.0, and others.
-- Designed and managed by Protocol Labs (https://protocol.ai/).
-
-## Rust implementation
-
-*What this talk is about.*
-
-https://github.com/libp2p/rust-libp2p
+- What Java promised in the 1990s.
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
 .right[
-    <img src="parity-logo.png" alt="ParityTech" height="100" />
+    <img src="web-assembly.png" alt="WebAssembly" height="100" />
 ]
 </div>
-
 ---
 
-# Rust libp2p implementation
+# Introduction: what is WebAssembly?
 
-## More details
+WebAssembly is a compilation target.
+- Step 1: compile your program to WebAssembly
+- Step 2: deploy your .wasm file as if it was JavaScript
+- Step 3: users' browsers run that WebAssembly, and thus your program
 
-https://github.com/libp2p/rust-libp2p
+Revisits the dream of "compile once, run everywhere".
 
-- Started in October 2017 by Parity.
-
----
-
-# Rust libp2p implementation
-
-## More details
-
-https://github.com/libp2p/rust-libp2p
-
-- Started in October 2017 by Parity.
-- Currently at version 0.5 on crates.io.
-
----
-
-# Rust libp2p implementation
-
-## More details
-
-https://github.com/libp2p/rust-libp2p
-
-- Started in October 2017 by Parity.
-- Currently at version 0.5 on crates.io.
-- Uses tokio for asynchronous networking.
-
----
-
-# Rust libp2p implementation
-
-## More details
-
-https://github.com/libp2p/rust-libp2p
-
-- Started in October 2017 by Parity.
-- Currently at version 0.5 on crates.io.
-- Uses tokio for asynchronous networking.
-- Used by Substrate and Polkadot. See it live: https://telemetry.polkadot.io/
-
----
-# Why compile it to WASM?
-
-<div style="position: absolute; bottom: 2%; left: 45%;">
-.left[
-    <img src="web-assembly.png" alt="WASM" height="100" />
-]
-</div>
-
----
-# Why compile it to WASM?
-
-<div style="position: absolute; top: 25%;">
-So that we can use it from within a browser!
-</div>
-
-<div style="position: absolute; bottom: 2%; left: 45%;">
-.left[
-    <img src="web-assembly.png" alt="WASM" height="100" />
-]
-</div>
-
----
-# Why compile it to WASM?
-
-<div style="position: absolute; top: 25%;">
-So that we can use it from within a browser!
-</div>
-
-<div style="position: absolute; top: 45%;">
-And that is <em>cool</em>.
-</div>
-
-<div style="position: absolute; bottom: 2%; left: 45%;">
-.left[
-    <img src="web-assembly.png" alt="WASM" height="100" />
-]
-</div>
-    
----
-
-# First attempt: through emscripten, end of 2017
+- What Java promised in the 1990s.
+- What NodeJS promised, more recently.
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
 .right[
-    <img src="emscripten.png" alt="Emscripten" height="60" />
+    <img src="web-assembly.png" alt="WebAssembly" height="100" />
 ]
 </div>
 ---
 
-# First attempt: through emscripten, end of 2017
+# Introduction: what is WebAssembly?
 
-- Modified `libp2p-websocket` to include a `BrowserWsConfig` struct that uses `stdweb`.
-- Compile to binary, and emscripten generates JavaScript and WASM files.
+WebAssembly is widely supported by browsers.
+
+<img src="caniuse.png" alt="" width="738" />
+
+<img src="caniuse-zoomed.png" alt="" width="738" />
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
 .right[
-    <img src="emscripten.png" alt="Emscripten" height="60" />
+    <small>caniuse.com</small>
 ]
 </div>
 ---
+# Rust and WebAssembly
 
-# First attempt: through emscripten, end of 2017
 
-- Modified `libp2p-websocket` to include a `BrowserWsConfig` struct that uses `stdweb`.
-- Compile to binary, and emscripten generates JavaScript and WASM files.
-- Problem: what polls the `Future`? There's no `tokio` runtime available.
+---
+# Rust and WebAssembly
+
+## Why Rust?
+
+- Excellent support for WebAssembly:
+  - `rustup target add wasm32-unknown-unknown`
+  - `cargo build --target=wasm32-unknown-unknown`
+  - ...
+  - Profit
+
+---
+# A success story
+
+
+---
+# A success story
+
+Some context:
+
+- Polkadot & Substrate are some of the biggest open source Rust repositories around.
+- Around 450k lines of code (not counting dependencies).
+- Started in 2017, re-using code written in 2015.
+
+---
+# A success story
+
+Some context:
+
+- Polkadot & Substrate are some of the biggest open source Rust repositories around.
+- Around 450k lines of code (not counting dependencies).
+- Started in 2017, re-using code written in 2015.
+- Takes a long time to compile.
+
+<div style="position: absolute; bottom: 15%; left: 15%; white-space: pre;">
+# Polkadot on a Thinkpad X1 6th gen
+
+cargo clean && time cargo build --release
+
+real    69m50,352s
+user    134m44,260s
+sys     2m36,023s
+</div>
+
+<div style="position: absolute; bottom: 17%; right: 45%;">
+    <img src="cry-emoji.png" alt="" height="40" />
+</div>
+---
+# A success story
+
+<div style="margin-top: 100px">
+    cargo build --target=wasm32-unknown-unknown just works! 🎉
+</div>
+
+---
+# A success story
+
+<div style="margin-top: 100px">
+    cargo build --target=wasm32-unknown-unknown just works! 🎉
+</div>
+<div style="margin-top: 50px">
+    ...but not without efforts
+</div>
+
+---
+# Caveats
+
+---
+# Caveats
+
+## Way easier if everything is pure Rust!
+
+- Some Rust libraries compile C/C++ code under the hood.
+- This requires a C/C++ compiler capable of compiling for WebAssembly.
+  - Not all systems have one.
+- Example problematic crates:
+  - `ring`, which uses inline assembly
+  - `openssl`
+  - `sodiumoxide`
+  - ...
+
+---
+# Caveats
+
+## Way easier if everything is pure Rust!
+
+- Some Rust libraries compile C/C++ code under the hood.
+- This requires a C/C++ compiler capable of compiling for WebAssembly.
+  - Not all systems have one.
+- Example problematic crates:
+  - **Basically everything cryptographic**
+
+---
+# Caveats
+
+## Way easier if everything is pure Rust!
+
+- Some Rust libraries compile C/C++ code under the hood.
+- This requires a C/C++ compiler capable of compiling for WebAssembly.
+  - Not all systems have one.
+- Better use a whitelist of cryptographic crates:
+  - `ed25519-dalek`
+  - `curve25519-dalek`
+  - `secp256k1`
+  - ...
+
+---
+# Caveats
+
+## Isolate I/O from non-I/O
+
+Problem: Many parts of the standard library non-functional.
+
+Example:
+
+- `std::fs::File`
+- `std::net::TcpStream`
+- `std::path::Path`
+- `std::process::Command`
+- `std::thread::spawn`
+- ...
+
+---
+# Caveats
+
+## Isolate I/O from non-I/O
+
+Problem: Many parts of the standard library non-functional.
+
+Example:
+
+- `std::fs::File`
+- `std::net::TcpStream`
+- `std::path::Path`
+- `std::process::Command`
+- `std::thread::spawn`
+- ...
+
+*Problematic if used deep within the code!*
+
+---
+# Caveats
+
+## Separate I/O from non-I/O code
+
+Solution: Avoid mixing I/O code with non-I/O code.
+
+Any code that:
+
+- Accesses files.
+- Opens TCP/UDP sockets.
+- Executes other programs.
+- ...
+
+Must be easy to disable.
+
+---
+# Caveats
+
+## Separate I/O from non-I/O code
+
+Solution: Avoid mixing I/O code with non-I/O code.
+
+Any code that:
+
+- Accesses files.
+- Opens TCP/UDP sockets.
+- Executes other programs.
+- ...
+
+Must be easy to disable.
+
+**Not specific to WebAssembly but good software design in general!**
+
+---
+# Caveats
+
+## No threads
+
+---
+# Caveats
+
+## Time management
+
+---
+# About Wasi
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
-.right[
-    <img src="emscripten.png" alt="Emscripten" height="60" />
-]
+    <img src="wasi.png" alt="Wasi" height="100" />
 </div>
+
 ---
+# About Wasi
 
-# First attempt: through emscripten, end of 2017
+- WebAssembly System Interface
+- https://wasi.dev/
+- Still work in progress.
 
-- Modified `libp2p-websocket` to include a `BrowserWsConfig` struct that uses `stdweb`.
-- Compile to binary, and emscripten generates JavaScript and WASM files.
-- Problem: what polls the `Future`? There's no `tokio` runtime available.
-- Solution: custom polling code. https://gist.github.com/tomaka/25e0f01c427a1bce0e0ddb10d278ead9
+Wasi = WebAssembly + environment similar to an operating system.
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
-.right[
-    <img src="emscripten.png" alt="Emscripten" height="60" />
-]
+    <img src="wasi.png" alt="Wasi" height="100" />
 </div>
+
 ---
+# About Wasi
 
-# First attempt: through emscripten, end of 2017
+- WebAssembly System Interface
+- https://wasi.dev/
+- Still work in progress.
 
-- Modified `libp2p-websocket` to include a `BrowserWsConfig` struct that uses `stdweb`.
-- Compile to binary, and emscripten generates JavaScript and WASM files.
-- Problem: what polls the `Future`? There's no `tokio` runtime available.
-- Solution: custom polling code. https://gist.github.com/tomaka/25e0f01c427a1bce0e0ddb10d278ead9
+Wasi = WebAssembly + the following:
 
-A more general problem is:
-
-- We had no idea how to properly do that.
+- A file system.
+- Access to a clock.
+- Stdin/stdout.
+- Command line arguments.
+- Environment variables.
+- TCP/UDP sockets (in the future).
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
-.right[
-    <img src="emscripten.png" alt="Emscripten" height="60" />
-]
+    <img src="wasi.png" alt="Wasi" height="100" />
 </div>
+
 ---
+# About Wasi
 
-# First attempt: through emscripten, end of 2017
+- WebAssembly System Interface
+- https://wasi.dev/
+- Still work in progress.
 
-- Modified `libp2p-websocket` to include a `BrowserWsConfig` struct that uses `stdweb`.
-- Compile to binary, and emscripten generates JavaScript and WASM files.
-- Problem: what polls the `Future`? There's no `tokio` runtime available.
-- Solution: custom polling code. https://gist.github.com/tomaka/25e0f01c427a1bce0e0ddb10d278ead9
+Wasi = WebAssembly + the following:
 
-A more general problem is:
+- A file system.
+- Access to a clock.
+- Stdin/stdout.
+- Command line arguments.
+- Environment variables.
+- TCP/UDP sockets (in the future).
 
-- We had no idea how to properly do that.
-- But nobody in the world had any idea how to do that.
+Strict in terms of security.
 
-<img src="venn-2017.png" alt="Venn diagram" height="200" />
+- Each feature can be enabled/disabled individually.
+- Access to the host's file system based on a whitelist.
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
-.right[
-    <img src="emscripten.png" alt="Emscripten" height="60" />
-]
+    <img src="wasi.png" alt="Wasi" height="100" />
 </div>
----
-
-# Second attempt: since end of 2018
-
-- Attempt to make it work for real.
 
 ---
+class: middle, center
 
-# Second attempt: since end of 2018
-
-- Attempt to make it work for real.
-
-<img src="venn-2018.png" alt="Venn diagram" height="200" />
-
----
-
-# Second attempt: since end of 2018
-
-- Attempt to make it work for real.
-
-<img src="venn-2018.png" alt="Venn diagram" height="200" />
-
-## Let's ditch Emscripten
-
-- Let's use `wasm-bindgen` instead!
-- <s>Emscripten</s> => Wasm
-- <s>Compiling into a binary</s> => Compile into a WASM library<br/>This library is usable from JavaScript.
-- No `main` function.
-
----
-
-# Second attempt: since end of 2018
-
-Didn't go as planned!
-
----
-
-# Second attempt: since end of 2018
-
-Didn't go as planned!
-
-## Issue #1
-
-- The `ring` library doesn't compile!
-- `ring` uses inline assembly, and obviously doesn't have a WASM or JavaScript
-implementation.
-
----
-
-# Second attempt: since end of 2018
-
-Didn't go as planned!
-
-## Issue #1
-
-- The `ring` library doesn't compile!
-- `ring` uses inline assembly, and obviously doesn't have a WASM or JavaScript
-implementation.
-
-Solution:
-
-- Replaced as much cryptographic code as possible with pure Rust libraries, which might or might
-  not be a good idea.
-- No pure Rust code for Elliptic Curve Diffie-Hellman, so rewrote it with WebCrypto using
-  wasm-bindgen.
-
----
-
-# Second attempt: since end of 2018
-
-Didn't go as planned!
-
-## Issue #2
-
-- Compiling failed with obscure error about files being in the wrong format.
-- Bug somewhere in the C code compilation. C libraries don't properly compile to WASM at the moment.
-
----
-
-# Second attempt: since end of 2018
-
-Didn't go as planned!
-
-## Issue #2
-
-- Compiling failed with obscure error about files being in the wrong format.
-- Bug somewhere in the C code compilation. C libraries don't properly compile to WASM at the moment.
-
-Solution:
-
-- Had to replace `secp256k1` (bindings to a C library) with `rust-secp256k1` (pure Rust).
-- Had to directly depend on the `clear_on_drop` crate in order to enable the `no_cc` feature.
-
----
-
-# Second attempt: since end of 2018
-
-Didn't go as planned!
-
-## Issue #3
-
-- Compilation failed with some obscure missing symbols.
-- It turns out that `stdweb` and `wasm-bindgen` don't well go together. They are two different
-ecosystems.
-
----
-
-# Second attempt: since end of 2018
-
-Didn't go as planned!
-
-## Issue #3
-
-- Compilation failed with some obscure missing symbols.
-- It turns out that `stdweb` and `wasm-bindgen` don't well go together. They are two different
-ecosystems.
-
-Solution:
-
-- Had to rewrite the websocket code to use `wasm-bindgen` and `web-sys`, instead of `stdweb`.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled!
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #4
-
-- Panic when generating a random number with the `rand` crate.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #4
-
-- Panic when generating a random number with the `rand` crate.
-
-Solution:
-
-- Had to depend on `rand` and activate the `wasm-bindgen` feature flag.
-- A lot of crates have an obscure feature flag that really shouldn't be an optional feature in an
-ideal world.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #5
-
-- Panics when calling `Instant::now()`.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #5
-
-- Panics when calling `Instant::now()`.
-- Problem: the `std` crate is available for wasm32-unknown-unknown, but panics whenever you try
-  to do any I/O.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #5
-
-- Panics when calling `Instant::now()`.
-- Problem: the `std` crate is available for wasm32-unknown-unknown, but panics whenever you try
-  to do I/O.
-
-Solution:
-
-- Had to write a `wasm-time` crate. Everything that uses `std::time::Instant` uses
-`wasm_time::Instant` instead.
-- `wasm_time::Instant::now()` calls `window.performance().now()` in JavaScript.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #6
-
-- Errors when using `tokio_timer::Delay` or `tokio_timer::Interval`, because no tokio context is
-  set.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #6
-
-- Errors when using `tokio_timer::Delay` or `tokio_timer::Interval`, because no tokio context is
-set.
-- When you call `tokio::run` (or use a tokio runtime in general), tokio puts a `Clock` object in
-a TLS that is then retreived by `tokio_timer`. If this value is lacking, it errors.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #6
-
-- Errors when using `tokio_timer::Delay` or `tokio_timer::Interval`, because no tokio context is
-set.
-- When you call `tokio::run` (or use a tokio runtime in general), tokio puts a `Clock` object in
-a TLS that is then retreived by `tokio_timer`. If this value is lacking, it errors.
-
-Solution:
-
-- Added mock `tokio_timer` equivalents in `wasm-time`, that use `setTimeout`.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #7
-
-- Wanted to try against IPFS nodes, but IPFS uses RSA.
-- No pure Rust RSA implementation!
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #7
-
-- Wanted to try against IPFS nodes, but IPFS uses RSA.
-- No pure Rust RSA implementation!
-
-Solution:
-
-- [Not done yet] Use WebCrypto for RSA.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #8
-
-- "out of memory" error on Firefox. No backtrace or any indication of the location.
-
----
-
-# Second attempt: since end of 2018
-
-Finally compiled! But doesn't run!
-
-## Issue #8
-
-- "out of memory" error on Firefox. No backtrace or any indication of the location.
-
-Solution:
-
-- Use Chrome 🤷
-
----
-
-# Second attempt: since end of 2018
-
-Finally ran!
-
----
-class: center, middle
-
-# Live demonstration
+# Conclusion
 
 ---
 class: center, middle
