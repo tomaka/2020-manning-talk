@@ -205,6 +205,27 @@ sys     2m36,023s
 
 ## Way easier if everything is pure Rust!
 
+---
+# Caveats
+
+## Way easier if everything is pure Rust!
+
+- Some Rust libraries compile C/C++ code under the hood.
+
+---
+# Caveats
+
+## Way easier if everything is pure Rust!
+
+- Some Rust libraries compile C/C++ code under the hood.
+- This requires a C/C++ compiler capable of compiling for WebAssembly.
+  - Not all systems have one.
+
+---
+# Caveats
+
+## Way easier if everything is pure Rust!
+
 - Some Rust libraries compile C/C++ code under the hood.
 - This requires a C/C++ compiler capable of compiling for WebAssembly.
   - Not all systems have one.
@@ -242,7 +263,12 @@ sys     2m36,023s
 ---
 # Caveats
 
-## Isolate I/O from non-I/O
+## Separate I/O from non-I/O code
+
+---
+# Caveats
+
+## Separate I/O from non-I/O code
 
 Problem: Many parts of the standard library non-functional.
 
@@ -258,7 +284,7 @@ Example:
 ---
 # Caveats
 
-## Isolate I/O from non-I/O
+## Separate I/O from non-I/O code
 
 Problem: Many parts of the standard library non-functional.
 
@@ -310,12 +336,144 @@ Must be easy to disable.
 ---
 # Caveats
 
-## No threads
+## Time management
 
 ---
 # Caveats
 
 ## Time management
+
+Like all I/O, time isn't available in `wasm32-unknown-unknown`.
+
+```rust
+let now = std::time::Instant::now();  // Panic!
+```
+
+---
+# Caveats
+
+## Time management
+
+Like all I/O, time isn't available in `wasm32-unknown-unknown`.
+
+```rust
+let now = std::time::Instant::now();  // Panic!
+```
+
+Problem:
+
+- Time is really annoying to isolate.
+- Nobody wants to inject a source of time throughout their source code.
+
+---
+# Caveats
+
+## Time management
+
+Like all I/O, time isn't available in `wasm32-unknown-unknown`.
+
+```rust
+let now = std::time::Instant::now();  // Panic!
+```
+
+Problem:
+
+- Time is really annoying to isolate.
+- Nobody wants to inject a source of time throughout their source code.
+
+Solution:
+
+- Use crates such as `wasm_timer`.
+  - Provides `Instant` and `Delay`.
+  - Abstracts over desktop and browsers.
+
+---
+# Caveats
+
+## No threads
+
+---
+# Caveats
+
+## No threads
+
+- Everything single-threaded.
+
+---
+# Caveats
+
+## No threads
+
+- Everything single-threaded.
+- Asynchronous Rust to the rescue!
+  - Cooperative multitasking.
+
+---
+# Caveats
+
+## No threads
+
+- Everything single-threaded.
+- Asynchronous Rust to the rescue!
+  - Cooperative multitasking.
+- Use `wasm_bindgen_futures::spawn_local`.
+
+---
+# Caveats
+
+## No threads
+
+- Everything single-threaded.
+- Asynchronous Rust to the rescue!
+  - Cooperative multitasking.
+- Use `wasm_bindgen_futures::spawn_local`.
+- Long-running CPU tasks must be broken down to periodically yield.
+
+---
+# Caveats
+
+## No threads: example
+
+**Don't**:
+
+```rust
+wasm_bindgen_futures::spawn_local(async move {
+    for _ in 0..50000 {
+        some_public_key.verify(message, signature);
+    }
+})
+```
+
+---
+# Caveats
+
+## No threads: example
+
+**Don't**:
+
+```rust
+wasm_bindgen_futures::spawn_local(async move {
+    for _ in 0..50000 {
+        some_public_key.verify(message, signature);
+    }
+})
+```
+
+**Do**:
+
+```rust
+wasm_bindgen_futures::spawn_local(async move {
+    for _ in 0..50000 {
+        some_public_key.verify(message, signature);
+
+        let mut once = false;
+        futures::future::poll_fn(move || {
+            if once { Poll::Ready(()) }
+            else { once = true; Poll::Pending }
+        }).await;
+    }
+})
+```
 
 ---
 # About Wasi
