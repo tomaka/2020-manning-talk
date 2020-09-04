@@ -88,6 +88,22 @@ WebAssembly is a compilation target.
 
 Revisits the dream of "compile once, run everywhere".
 
+<div style="position: absolute; bottom: 5%; right: 5%;">
+.right[
+    <img src="web-assembly.png" alt="WebAssembly" height="100" />
+]
+</div>
+---
+
+# Introduction: what is WebAssembly?
+
+WebAssembly is a compilation target.
+- Step 1: compile your program to WebAssembly
+- Step 2: deploy your .wasm file as if it was JavaScript
+- Step 3: users' browsers run that WebAssembly, and thus your program
+
+Revisits the dream of "compile once, run everywhere".
+
 - What Java promised in the 1990s.
 
 <div style="position: absolute; bottom: 5%; right: 5%;">
@@ -132,6 +148,11 @@ WebAssembly is widely supported by browsers.
 ---
 # Rust and WebAssembly
 
+
+---
+# Rust and WebAssembly
+
+## Why Rust?
 
 ---
 # Rust and WebAssembly
@@ -268,6 +289,7 @@ sys     2m36,023s
   - `ring`, which uses inline assembly
   - `openssl`
   - `sodiumoxide`
+  - All crates that depend on them.
   - ...
 
 ---
@@ -394,7 +416,7 @@ pub async fn send_http_request(target_domain: &str, path: &str) {
 }
 ```
 
-Also recommend avoiding:
+Also strongly recommend avoiding:
 
 ```rust
 #[cfg(target_os = "unknown")]
