@@ -450,6 +450,23 @@ pub async fn make_http_request<T>(existing_socket: T, path: &str)
 ---
 # Caveats
 
+## Separate I/O from non-I/O code
+
+Do:
+
+```rust
+pub async fn make_http_request<T>(existing_socket: T, path: &str)
+  where T: AsyncRead + AsyncWrite
+{
+  // ...
+}
+```
+
+- Put the platform-specific code in the highest layer.
+
+---
+# Caveats
+
 ## Time management
 
 ---
