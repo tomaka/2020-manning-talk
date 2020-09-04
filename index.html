@@ -139,6 +139,7 @@ WebAssembly is widely supported by browsers.
 ## Why Rust?
 
 - Excellent support for WebAssembly:
+
   - `rustup target add wasm32-unknown-unknown`
   - `cargo build --target=wasm32-unknown-unknown`
   - ...
@@ -175,6 +176,7 @@ WebAssembly is widely supported by browsers.
 - Ecosystem already there!
   - `wasm-bindgen` crate.
   - `js-sys` and `web-sys` crates.
+  - Great tooling: `wasm-pack`, `twiggy`, ...
   - Many ecosystem crates compatible.
 
 ---
@@ -369,6 +371,63 @@ Must be easy to disable.
 ---
 # Caveats
 
+## Separate I/O from non-I/O code
+
+Don't:
+
+```rust
+pub async fn send_http_request(target_domain: &str, path: &str) {
+  // ...
+}
+```
+
+---
+# Caveats
+
+## Separate I/O from non-I/O code
+
+Don't:
+
+```rust
+pub async fn send_http_request(target_domain: &str, path: &str) {
+  // ...
+}
+```
+
+Also recommend avoiding:
+
+```rust
+#[cfg(target_os = "unknown")]
+pub async fn send_http_request(target_domain: &str, path: &str) {
+  let request = web_sys::XmlHttpRequest::new();
+  // ...
+}
+
+#[cfg(not(target_os = "unknown"))]
+pub async fn send_http_request(target_domain: &str, path: &str) {
+  let socket = TcpStream::new(...);
+  // ...
+}
+```
+
+---
+# Caveats
+
+## Separate I/O from non-I/O code
+
+Do:
+
+```rust
+pub async fn make_http_request<T>(existing_socket: T, path: &str)
+  where T: AsyncRead + AsyncWrite
+{
+  // ...
+}
+```
+
+---
+# Caveats
+
 ## Time management
 
 ---
@@ -420,6 +479,10 @@ Solution:
   - Provides `Instant` and `Delay`.
   - Abstracts over desktop and browsers.
     - Uses `web-sys`.
+
+```rust
+let now = wasm_timer::Instant::now();
+```
 
 ---
 # Caveats
@@ -578,6 +641,62 @@ Strict in terms of security.
 class: middle, center
 
 # Conclusion
+
+---
+# Conclusion
+
+- Assuming good practices, Rust code is easy to compile to Wasm.
+
+---
+# Conclusion
+
+- Assuming good practices, Rust code is easy to compile to Wasm.
+  - Prefer pure Rust crates.
+
+---
+# Conclusion
+
+- Assuming good practices, Rust code is easy to compile to Wasm.
+  - Prefer pure Rust crates.
+  - Separate I/O from non-I/O code.
+
+---
+# Conclusion
+
+- Assuming good practices, Rust code is easy to compile to Wasm.
+  - Prefer pure Rust crates.
+  - Separate I/O from non-I/O code.
+      - But avoid platform-specific code.
+
+---
+# Conclusion
+
+- Assuming good practices, Rust code is easy to compile to Wasm.
+  - Prefer pure Rust crates.
+  - Separate I/O from non-I/O code.
+      - But avoid platform-specific code.
+  - Use asynchronous Rust.
+
+---
+# Conclusion
+
+- Assuming good practices, Rust code is easy to compile to Wasm.
+  - Prefer pure Rust crates.
+  - Separate I/O from non-I/O code.
+      - But avoid platform-specific code.
+  - Use asynchronous Rust.
+  - Don't rely on more than one thread.
+
+---
+# Conclusion
+
+- Assuming good practices, Rust code is easy to compile to Wasm.
+  - Prefer pure Rust crates.
+  - Separate I/O from non-I/O code.
+      - But avoid platform-specific code.
+  - Use asynchronous Rust.
+  - Don't rely on more than one thread.
+- It's ready *now*!
 
 ---
 class: center, middle
